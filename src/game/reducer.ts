@@ -37,24 +37,6 @@ export const INITIAL_GAME_STATE: GameState = {
 /** Events that end the current song and bring the player back to the menu. */
 const SONG_END_EVENTS: ReadonlySet<EventName> = new Set(["finished", "failed", "menu"]);
 
-/** Events that can only happen while a song is playing. */
-const IN_SONG_EVENTS: ReadonlySet<EventName> = new Set([
-    "noteCut",
-    "noteFullyCut",
-    "noteMissed",
-    "noteSpawned",
-    "bombCut",
-    "bombMissed",
-    "obstacleEnter",
-    "obstacleExit",
-    "scoreChanged",
-    "beatmapEvent",
-    "energyChanged",
-    "pause",
-    "resume",
-    "softFailed",
-]);
-
 /** Events that change what is on screen and should be rendered without batching. */
 export function isLifecycleEvent(event: EventName): boolean {
     return event === "songStart" || SONG_END_EVENTS.has(event);
@@ -83,11 +65,12 @@ export function reduceEvent(state: GameState, data: BSEvent): GameState {
     const isSongEnd = SONG_END_EVENTS.has(data.event);
     const isMenu = data.event === "menu";
 
-    // 1. In-song flag: explicit lifecycle events first, then scene, then implicit gameplay events
+    // 1. In-song flag: only explicit signals enter a song. Gameplay events never do: HttpSiraStatus can
+    //    deliver a few late ones after "menu", which would bring the HUD back. Opening the overlay
+    //    mid-song still works because the "hello" event carries `game.scene === "Song"`.
     let inSong = state.inSong;
     if (isSongStart) inSong = true;
     else if (isSongEnd) inSong = false;
-    else if (IN_SONG_EVENTS.has(data.event)) inSong = true;
 
     if (incoming.game?.scene === "Menu") inSong = false;
     else if (incoming.game?.scene === "Song") inSong = true;

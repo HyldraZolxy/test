@@ -18,10 +18,13 @@ export class LiveSource implements GameEventSource {
     private stopped = true;
     private readonly host: string;
     private readonly port: number;
+    private readonly debug: boolean;
 
-    constructor(host: string, port: number) {
+    /** @param debug logs every received event to the console */
+    constructor(host: string, port: number, debug = false) {
         this.host = host;
         this.port = port;
+        this.debug = debug;
     }
 
     start(): void {
@@ -64,7 +67,15 @@ export class LiveSource implements GameEventSource {
         };
         ws.onmessage = (message: MessageEvent<string>) => {
             const event = parseEvent(message.data);
-            if (event) gameStore.dispatch(event);
+            if (!event) return;
+            if (this.debug) {
+                console.log(`[Sira] ${event.event}`, {
+                    scene: event.status?.game?.scene,
+                    fields: Object.keys(event.status ?? {}),
+                    status: event.status,
+                });
+            }
+            gameStore.dispatch(event);
         };
         ws.onclose = () => {
             gameStore.setConnection("disconnected");

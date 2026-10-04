@@ -39,6 +39,7 @@ The page background is transparent.
 | `settings` (alias `config`) | `true` / `1` | `false` | Open the settings panel at load |
 | `host` | IP or hostname | `127.0.0.1` | HttpSiraStatus host |
 | `port` | `1` – `65535` | `6557` | HttpSiraStatus port |
+| `debug` | `true` / `1` | `false` | Log every game event to the browser console |
 
 ## Keyboard shortcuts
 

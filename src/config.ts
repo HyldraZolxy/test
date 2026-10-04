@@ -32,6 +32,12 @@ export const CONNECTION_BADGE_AUTO_HIDE_MS = 8000;
 /** Song progress clock refresh interval (~25 FPS keeps OBS CPU usage low). */
 export const PROGRESS_TICK_MS = 40;
 
+/**
+ * No game event for this long during a song means the game is paused: the progress clock freezes.
+ * Needed because HttpSiraStatus does not always send "pause"/"resume" events.
+ */
+export const SILENT_PAUSE_MS = 1500;
+
 /** Energy below this ratio is displayed as "low" (red, pulsing). */
 export const LOW_ENERGY_THRESHOLD = 0.25;
 /** Energy at song start in Beat Saber. */

@@ -50,10 +50,10 @@ export function App() {
 
     // Event source: the live game or the simulator
     useEffect(() => {
-        const source = isMock ? new MockSource() : new LiveSource(params.host, params.port);
+        const source = isMock ? new MockSource() : new LiveSource(params.host, params.port, params.debug);
         source.start();
         return () => source.stop();
-    }, [isMock, params.host, params.port]);
+    }, [isMock, params.host, params.port, params.debug]);
 
     // Auto-hide the help bar (kept visible while settings are open)
     useEffect(() => {

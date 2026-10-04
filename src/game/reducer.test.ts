@@ -42,8 +42,21 @@ describe("reduceEvent", () => {
         expect(state.performance).toBeNull();
     });
 
-    it("treats gameplay events as being in a song (overlay opened mid-song)", () => {
-        expect(play(event("noteCut")).inSong).toBe(true);
+    it("enters the song from the hello event when opened mid-song", () => {
+        const game = { pluginVersion: "", gameVersion: "", scene: "Song" as const, mode: "Solo" as const };
+        expect(play(event("hello", { game, beatmap: BEATMAP })).inSong).toBe(true);
+    });
+
+    it("stays in the menu when late gameplay events arrive after leaving the map", () => {
+        const state = play(
+            event("songStart", { beatmap: BEATMAP }),
+            event("pause"),
+            event("menu"),
+            event("noteMissed", { performance: perf({ score: 1000 }) }),
+            event("energyChanged", { energy: 0.4 }),
+        );
+        expect(state.inSong).toBe(false);
+        expect(state.beatmap).toBeNull();
     });
 
     it("merges partial performance updates", () => {

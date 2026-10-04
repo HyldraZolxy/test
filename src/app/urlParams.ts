@@ -20,6 +20,8 @@ export interface UrlParams {
     scale: number | null;
     /** Twitch preset: larger default scale (`?twitch=true`, alias `?stream=true`). */
     twitchPreset: boolean;
+    /** Log every HttpSiraStatus event to the console (`?debug=true`). */
+    debug: boolean;
 }
 
 const MIN_SCALE = 0.5;
@@ -44,5 +46,6 @@ export function parseUrlParams(search: string): UrlParams {
         openSettings: isTrue(params.get("settings")) || isTrue(params.get("config")),
         scale: params.has("scale") && scale >= MIN_SCALE && scale <= MAX_SCALE ? scale : null,
         twitchPreset: isTrue(params.get("twitch")) || isTrue(params.get("stream")),
+        debug: isTrue(params.get("debug")),
     };
 }

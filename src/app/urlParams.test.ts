@@ -11,11 +11,12 @@ describe("parseUrlParams", () => {
             openSettings: false,
             scale: null,
             twitchPreset: false,
+            debug: false,
         });
     });
 
     it("reads every parameter", () => {
-        expect(parseUrlParams("?host=192.168.1.10&port=7000&skin=neon&mock=1&settings=true&scale=1.25&twitch=true"))
+        expect(parseUrlParams("?host=192.168.1.10&port=7000&skin=neon&mock=1&settings=true&scale=1.25&twitch=true&debug=1"))
             .toEqual({
                 host: "192.168.1.10",
                 port: 7000,
@@ -24,6 +25,7 @@ describe("parseUrlParams", () => {
                 openSettings: true,
                 scale: 1.25,
                 twitchPreset: true,
+                debug: true,
             });
     });
 

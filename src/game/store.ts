@@ -6,6 +6,10 @@ type Listener = () => void;
 let state: GameState = INITIAL_GAME_STATE;
 const listeners = new Set<Listener>();
 let notifyScheduled = false;
+/** performance.now() of the last received event, even when it did not change the state. */
+let lastEventAt = 0;
+/** Whether HttpSiraStatus sent a pause/resume event (it depends on the game version). */
+let pauseEventsSeen = false;
 
 function notifyNow(): void {
     notifyScheduled = false;
@@ -38,8 +42,23 @@ export const gameStore = {
         return () => listeners.delete(listener);
     },
 
+    /**
+     * performance.now() of the last received event. While a song plays, events (notes, lights, score)
+     * arrive several times per second; a long silence means the game is paused.
+     */
+    getLastEventAt(): number {
+        return lastEventAt;
+    },
+
+    /** True once the game sent a "pause" or "resume" event: pauses can then be trusted to be reported. */
+    hasPauseEvents(): boolean {
+        return pauseEventsSeen;
+    },
+
     /** Folds an HttpSiraStatus event into the state. */
     dispatch(event: BSEvent): void {
+        lastEventAt = performance.now();
+        if (event.event === "pause" || event.event === "resume") pauseEventsSeen = true;
         const prev = state;
         const next = reduceEvent(prev, event);
         if (next === prev) return;
