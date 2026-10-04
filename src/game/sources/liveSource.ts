@@ -20,7 +20,9 @@ export class LiveSource implements GameEventSource {
     private readonly port: number;
     private readonly debug: boolean;
 
-    /** @param debug logs every received event to the console */
+    /** @param host
+     @param port
+     @param debug logs every received event to the console */
     constructor(host: string, port: number, debug = false) {
         this.host = host;
         this.port = port;
