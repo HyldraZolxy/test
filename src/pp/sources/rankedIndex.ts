@@ -195,11 +195,29 @@ function refresh(): Promise<LoadedIndex> {
     return refreshing;
 }
 
+/** An index built from the dump is a fallback: upgrade it as soon as the hosted index is reachable. */
+let upgradeAttempted = false;
+function upgradeFromDump(): void {
+    if (upgradeAttempted || refreshing) return;
+    upgradeAttempted = true;
+    downloadHostedIndex()
+        .then((index) => {
+            loaded = { fetchedAt: Date.now(), fromDump: false, index };
+            writeCache(loaded);
+            console.info(`[PP] Upgraded to the hosted ranked index (generated ${index.generatedAt})`);
+        })
+        .catch(() => {
+            // Still unreachable: keep the dump-based index, no 10 MB re-download
+        });
+}
+
 async function getIndex(): Promise<LoadedIndex> {
     loaded ??= readCache();
     if (!loaded) return refresh();
     if (Date.now() - loaded.fetchedAt > RANKED_INDEX_TTL_MS) {
         refresh().catch((err) => console.warn("[PP] Ranked index refresh failed, keeping the cached one:", err));
+    } else if (loaded.fromDump) {
+        upgradeFromDump();
     }
     return loaded;
 }

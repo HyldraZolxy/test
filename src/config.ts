@@ -47,7 +47,7 @@ export const MULTIPLIER_STEPS = [1, 2, 4, 8] as const;
  * so it also works when the overlay is opened from `file:///`.
  */
 export const HOSTED_RANKED_INDEX_URL =
-    "https://raw.githubusercontent.com/OWNER/REPO/ranked-index/ranked-index.json";
+    "https://raw.githubusercontent.com/HyldraZolxy/test/ranked-index/ranked-index.json";
 
 /** How long a downloaded ranked index stays fresh in localStorage. */
 export const RANKED_INDEX_TTL_MS = 6 * 60 * 60 * 1000;
