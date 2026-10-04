@@ -1,0 +1,43 @@
+# Publishes the ranked index (~280 KB gzip) to the "ranked-index" branch every 6 hours.
+# The overlay reads it from raw.githubusercontent.com (open CORS, works from file:///).
+name: Ranked index
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ranked-index
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build index
+        run: npm run build:index -- "$RUNNER_TEMP/ranked-index.json"
+
+      # Orphan branch overwritten on every run: the repository history does not grow
+      - name: Publish to the ranked-index branch
+        run: |
+          cd "$RUNNER_TEMP"
+          mkdir publish && cd publish
+          git init -q -b ranked-index
+          cp ../ranked-index.json .
+          git add ranked-index.json
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "Ranked index $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ranked-index

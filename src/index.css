@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Transparent page: the overlay is composited on top of the stream by OBS */
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    height: 100%;
+    overflow: hidden;
+}
