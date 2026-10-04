@@ -29,6 +29,9 @@ jobs:
 
       - name: Build index
         run: npm run build:index -- "$RUNNER_TEMP/ranked-index.json"
+        env:
+          # Lets the script reuse the previous BeatLeader data if the BeatLeader API blocks CI
+          PREVIOUS_INDEX_URL: https://raw.githubusercontent.com/${{ github.repository }}/ranked-index/ranked-index.json
 
       # Orphan branch overwritten on every run: the repository history does not grow
       - name: Publish to the ranked-index branch
